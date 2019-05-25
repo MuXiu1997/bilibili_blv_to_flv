@@ -64,14 +64,19 @@ async def fun_txt_file_obj(txt_file_path, txt_file_str):
 
 
 async def fun_ffmpeg(txt_file_path, output_path, output_file_name):
+    output_file_path = os.path.join(output_path, output_file_name).replace(' ', '_')
+    for each_char in r'\/:*?"<>|':
+        output_file_path.replace(each_char, '-')
     os.system("ffmpeg -f concat -safe 0 -i {} -c copy {} -y"
-              .format(txt_file_path.replace('\\', '/'), os.path.join(output_path, output_file_name)))
+              .format(txt_file_path.replace('\\', '/'), output_file_path))
 
 
 async def concat(each_dir, output_path, json_file='entry.json'):
     json_file_obj = await fun_json_file_obj(os.path.join(each_dir, json_file))
 
     output_file_name = json.load(json_file_obj)['page_data']['part'] + '.flv'
+    for each_char in r'\/:*?"<>|':
+        output_file_name.replace(each_char, '-')
     list_all = list(map(lambda x: os.path.join(each_dir, x), os.listdir(each_dir)))
     _dir = list(filter(lambda x: os.path.isdir(x), list_all))[0]
     # list_all_file = list(map(lambda x: os.path.join(_dir, x), os.listdir(_dir)))
